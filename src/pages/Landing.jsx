@@ -105,7 +105,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
               to="/signup"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 px-6 py-3 text-sm font-semibold text-white shadow-[0_18px_45px_rgba(56,189,248,0.35)] hover:brightness-110 transition"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-500 px-6 py-3 text-sm font-semibold text-white hover:brightness-110 transition"
             >
               Start for free
           <ArrowRight className="w-4 h-4" />

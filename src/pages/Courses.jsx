@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BookOpen, Sparkles, TrendingUp } from "lucide-react";
+import { BookOpen, Sparkles, TrendingUp, Search, X } from "lucide-react";
 
 export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,7 +66,10 @@ export default function Courses() {
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-blue-400" />
             <span className="text-sm text-slate-300">
-              <span className="font-semibold text-white">{courses.length}</span>{" "}
+              <span className="font-semibold text-white">{courses.filter(c => 
+                c.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                c.description?.toLowerCase().includes(searchQuery.toLowerCase())
+              ).length}</span>{" "}
               Courses
             </span>
           </div>
@@ -76,14 +80,41 @@ export default function Courses() {
             </span>
           </div>
         </div>
+
+        {/* SEARCH BAR */}
+        <div className="mt-6 relative">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search courses..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-10 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-white transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {courses.map((course, index) => (
+        {courses
+          .filter(course => 
+            course.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+          .map((course, index) => (
           <div
             key={course.id}
-            className="group bg-slate-900/70 border border-slate-800/60 rounded-2xl shadow-lg hover:shadow-blue-600/20 transition-all duration-300 hover:scale-[1.01] overflow-hidden backdrop-blur-lg"
+            className="group bg-slate-900/70 border border-slate-800/60 rounded-2xl shadow-lg hover:shadow-blue-600/20 transition-all duration-300 hover:scale-[1.01] overflow-hidden backdrop-blur-lg h-80"
             style={{
               animationDelay: `${index * 100}ms`,
               animation: "fadeInUp 0.5s ease-out forwards",
@@ -93,7 +124,7 @@ export default function Courses() {
             <div className="grid grid-cols-1 lg:grid-cols-2 h-full">
 
               {/* LEFT SIDE */}
-              <div className="p-6 flex flex-col justify-between min-h-[320px]">
+              <div className="p-6 flex flex-col justify-between">
                 <div className="flex-1">
                   <div className="w-12 h-12 mb-3 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-xl flex items-center justify-center border border-blue-600/20">
                     <BookOpen className="w-6 h-6 text-blue-400" />
@@ -120,11 +151,11 @@ export default function Courses() {
               </div>
 
               {/* RIGHT SIDE — FIXED BUTTON + IMAGE */}
-              <div className="bg-slate-800/40 flex flex-col min-h-[320px] px-6 relative">      
+              <div className="bg-slate-800/40 flex flex-col px-6 relative">      
                 <div className="flex-1"></div>
 
                 {/* FIXED HEIGHT IMAGE - INSET WITH ROUNDED BORDERS */}
-                <div className="relative w-full h-48 overflow-hidden flex-shrink-0 px-4 py-4">
+                <div className="relative w-full h-40 overflow-hidden flex-shrink-0 px-2 py-4">
                   <img
                     src={
                       course.image_url
@@ -163,7 +194,10 @@ export default function Courses() {
       </div>
 
       {/* EMPTY STATE */}
-      {courses.length === 0 && !loading && (
+      {courses.filter(c => 
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        c.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      ).length === 0 && !loading && (
         <div className="text-center py-16">
           <div className="w-20 h-20 bg-slate-900/50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-800/50">
             <BookOpen className="w-10 h-10 text-slate-600" />

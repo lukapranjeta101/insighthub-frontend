@@ -1,18 +1,38 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BookOpen, Menu, X, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [isAdmin, setIsAdmin] = useState(false);
   const token = localStorage.getItem("token");
-  const userEmail = localStorage.getItem("userEmail"); // NEW
+
+  // ⭐ SECURITY: Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!token) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const axios = (await import("axios")).default;
+        await axios.get("http://127.0.0.1:8000/admin/dashboard", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsAdmin(true);
+      } catch (err) {
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("userEmail"); // NEW
     navigate("/");
   };
 
@@ -58,8 +78,8 @@ export default function Navbar() {
               {token ? "Courses" : "Catalog"}
             </Link>
 
-            {/* ⭐ ADMIN BUTTON — ONLY FOR YOU */}
-            {userEmail === "lukapranjeta18@gmail.com" && (
+            {/* ⭐ ADMIN BUTTON — Only shown to verified admins */}
+            {isAdmin && (
               <Link
                 to="/admin"
                 className={`px-4 py-2 rounded-lg transition-all duration-200 text-amber-400 hover:text-white hover:bg-amber-400/10 ${isActive(
@@ -144,8 +164,8 @@ export default function Navbar() {
               {token ? "Courses" : "Catalog"}
             </Link>
 
-            {/* ⭐ ADMIN BUTTON MOBILE */}
-            {userEmail === "lukapranjeta18@gmail.com" && (
+            {/* ⭐ ADMIN BUTTON MOBILE — Only shown to verified admins */}
+            {isAdmin && (
               <Link
                 to="/admin"
                 onClick={() => setMobileMenuOpen(false)}
